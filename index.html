@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>位置情報取得&map表示</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            height: calc(100%-102px);
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>位置情報取得&map表示</h1>
+    <div id="map"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script
+        src='https://www.bing.com/api/maps/mapcontrol?key=AjtBllQckiWNdF_4b131gOtO7e10FsZcN2cMeQM-lgND3ZAftD1HkgcQHCMSWSgH'
+        async defer></script>
+    <script>
+        let map;
+        const option = {
+            enableHighAccuracy: true,
+            maximumAge: 20000,
+            timeout: 10000000,
+        };
+
+        function pushPin(lat, lng, map) {
+            const location = new Microsoft.Maps.Location(lat, lng)
+            const pin = new Microsoft.Maps.Pushpin(location, {
+                color: 'naby',
+                visible: true,
+            });
+            map.entities.push(pin);
+        };
+        function generateInfobox(lat, lng, map) {
+            const location = new Microsoft.Maps.Location(lat, lng)
+            const infobox = new Microsoft.Maps.Infobox(location, {
+                title: 'イマココ',
+                description: "I'm here!!!"
+            });
+            infobox.setMap(map);
+        };
+
+        function mapsInit(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            map = new Microsoft.Maps.Map('#map', {
+                center: {
+                    latitude: lat, longitude: lng
+                },
+                zoom: 12,
+            });
+            pushPin(lat, lng, map);
+            generateInfobox(lat, lng, map);
+        };
+        function showError(error) {
+            let e = "";
+            if (error.code == 1) {
+                e = "位置情報が許可されません";
+            }
+            if (error.code == 2) {
+                e = "位置情報が特定できません";
+            }
+            if (error.code == 3) {
+                e = "位置情報を取得する前にタイムアウトになりました";
+            }
+            alert("error:" + e);
+        }
+        function GetMap() {
+            navigator.geolocation.getCurrentPosition(mapsInit, showError, option)
+        }
+        window.onload = function () {
+            GetMap();
+        }
+    </script>
+
+</body>
+
+</html>
